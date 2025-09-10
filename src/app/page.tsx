@@ -1,6 +1,13 @@
-const Home = () => {
+import Features from "@/components/Features";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+
+export default function Home() {
   return (
-    <div>This is home</div>
+    <main className="min-h-screen flex flex-col">
+      <Hero />
+      <Features />
+      <Footer />
+    </main>
   );
-};
-export default Home;
+}

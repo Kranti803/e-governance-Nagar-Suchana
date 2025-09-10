@@ -22,6 +22,7 @@ import {
   FolderKanban,
 } from "lucide-react";
 import Link from "next/link";
+import Logo from "./Logo";
 
 // This is sample data.
 const data = {
@@ -74,10 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props} className="p-4">
       <SidebarHeader className="">
-        <h2 className="flex items-center gap-x-4 text-[#0f2b66] font-extrabold text-2xl">
-          <LayoutGrid />
-          नगर सूचना
-        </h2>
+        <Logo/>
       </SidebarHeader>
 
       <SidebarContent>
