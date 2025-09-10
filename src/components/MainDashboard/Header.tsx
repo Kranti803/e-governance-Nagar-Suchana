@@ -13,6 +13,7 @@ const Header = () => {
       <h2 className="font-bold capitalize md:text-xl">
         Ward 12 Digital Notice Board
       </h2>
+     
     </header>
   );
 };
