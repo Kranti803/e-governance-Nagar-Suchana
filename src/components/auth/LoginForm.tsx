@@ -21,12 +21,20 @@ export function LoginForm() {
     setIsSubmitting(true);
     try {
       const formData = new FormData(event.currentTarget);
-      const identifier = String(formData.get("identifier") || "");
-      const password = String(formData.get("password") || "");
-      // Placeholder auth flow – replace with real API call
-      await new Promise((r) => setTimeout(r, 600));
-      console.log({ identifier, password });
-      // Redirect or toast here
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier: formData.get("identifier"),
+          password: formData.get("password"),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
+      alert("Login successful");
     } finally {
       setIsSubmitting(false);
     }

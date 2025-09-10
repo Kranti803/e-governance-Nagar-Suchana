@@ -18,10 +18,24 @@ export function RegisterForm() {
     setIsSubmitting(true);
     try {
       const formData = new FormData(e.currentTarget);
-      const payload = Object.fromEntries(formData.entries());
-      // Placeholder API call; integrate with your backend later
-      await new Promise((r) => setTimeout(r, 800));
-      console.log({ payload });
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: formData.get("fullName"),
+          email: formData.get("email"),
+          phone: formData.get("phone"),
+          password: formData.get("password"),
+          municipality: (formData.get("municipality") as string) || selectedMunicipality?.id,
+          ward: formData.get("ward"),
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        alert(data.message || "Registration failed")
+        return
+      }
+      alert("Registration successful")
     } finally {
       setIsSubmitting(false);
     }
