@@ -8,16 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Shield, UserPlus } from "lucide-react";
 import { municipalities, Municipality } from "@/constants";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
-export function RegisterForm() {
+ const RegisterForm=() => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality | null>(null);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     try {
       const formData = new FormData(e.currentTarget);
+
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,10 +37,11 @@ export function RegisterForm() {
       })
       if (!res.ok) {
         const data = await res.json()
-        alert(data.message || "Registration failed")
+        toast.error(data.message || "Registration failed")
         return
       }
-      alert("Registration successful")
+      toast.success("Registration successful!")
+      router.replace("/dashboard") //user cannot go back to login after registering using router.replace instead of router.push
     } finally {
       setIsSubmitting(false);
     }

@@ -6,16 +6,21 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LogIn, Shield } from "lucide-react";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 
-export function LoginForm() {
+const LoginForm=() => {
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -25,16 +30,19 @@ export function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier: formData.get("identifier"),
+          email: formData.get("email"),
           password: formData.get("password"),
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        alert(data.message || "Login failed");
+        toast.error(data.message || "Login failed");
         return;
       }
-      alert("Login successful");
+      toast.success("Login successful!");
+      const redirectTo = searchParams.get("redirect") || "/dashboard";
+      // Use hard navigation to ensure Set-Cookie is applied before protected route check
+      window.location.replace(redirectTo);
     } finally {
       setIsSubmitting(false);
     }
@@ -59,8 +67,8 @@ export function LoginForm() {
             <div className="space-y-2">
               <Label htmlFor="identifier">Email</Label>
               <Input
-                id="identifier"
-                name="identifier"
+                id="email"
+                name="email"
                 placeholder="e.g. you@example.com"
                 required
                 type="text"
