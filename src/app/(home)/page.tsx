@@ -1,6 +1,6 @@
-import Features from "@/components/Features"
-import Footer from "@/components/Footer"
-import Hero from "@/components/Hero"
+import Features from "@/components/hero/Features"
+import Footer from "@/components/layouts/Footer"
+import Hero from "@/components/hero/Hero"
 
 export default function Home() {
   return (

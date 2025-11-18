@@ -1,6 +1,6 @@
 import { features } from "@/constants";
 import React from "react";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 
 const Features = () => {
   return (

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Bell, Shield, Users } from "lucide-react";
-import Logo from "@/components/Logo";
+import Logo from "@/components/layouts/Logo";
 import Link from "next/link";
 
 const Hero = () => {

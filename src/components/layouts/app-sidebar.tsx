@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 import {
@@ -9,40 +11,31 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  LayoutGrid,
   Megaphone,
   Settings,
-  FileText,
   Shield,
   SquarePlus,
   FolderKanban,
 } from "lucide-react";
 import Link from "next/link";
 import Logo from "./Logo";
+import { usePathname } from "next/navigation";
 
-// This is sample data.
 const data = {
   navMain: [
     {
-      url: "#",
+      url: "/dashboard",
       items: [
         {
           title: "Citizen: Notice Board",
-          url: "#",
+          url: "/dashboard",
           icon: <Megaphone size={28} />,
-          isActive: true,
-        },
-        {
-          title: "Citizen: Notice Detail",
-          url: "#",
-          icon: <FileText size={28} />,
         },
         {
           title: "Citizen: Setting",
-          url: "#",
+          url: "/dashboard/settings",
           icon: <Settings size={28} />,
         },
       ],
@@ -52,17 +45,17 @@ const data = {
       items: [
         {
           title: "Admin: Dashboard",
-          url: "#",
+          url: "/admin/dashboard",
           icon: <Shield size={28} />,
         },
         {
           title: "Admin: Post Notice",
-          url: "#",
+          url: "/admin/post_notice",
           icon: <SquarePlus size={28} />,
         },
         {
           title: "Admin: Manage Notices",
-          url: "#",
+          url: "/admin/manage_notices",
           icon: <FolderKanban size={28} />,
         },
       ],
@@ -71,14 +64,15 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+  console.log(pathname);
   return (
     <Sidebar {...props} className="p-4">
       <SidebarHeader className="">
-        <Logo/>
+        <Logo />
       </SidebarHeader>
 
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item, idx) => (
           <SidebarGroup key={idx}>
             <SidebarGroupContent>
@@ -88,9 +82,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuButton
                       size={"lg"}
                       asChild
-                      className={`border-none outline-none font-semibold  ${
-                        item?.isActive ? "bg-green-200 rounded-4xl" : ""
-                      } hover:bg-green-200  text-[#0f2b66] rounded-4xl`}
+                      isActive={pathname === item.url}
+                      className="border-none outline-none font-semibold hover:bg-green-200  text-[#0f2b66] rounded-4xl"
                     >
                       <Link
                         href={item.url}
@@ -107,7 +100,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   );
 }
