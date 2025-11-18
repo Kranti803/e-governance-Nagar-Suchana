@@ -15,17 +15,19 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 
-const LoginForm=() => {
-
+const LoginForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
+
     try {
       const formData = new FormData(event.currentTarget);
+
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,15 +36,22 @@ const LoginForm=() => {
           password: formData.get("password"),
         }),
       });
+
       const data = await res.json();
+
       if (!res.ok) {
         toast.error(data.message || "Login failed");
         return;
       }
-      toast.success("Login successful!");
-      const redirectTo = searchParams.get("redirect") || "/dashboard";
-      // Use hard navigation to ensure Set-Cookie is applied before protected route check
-      window.location.replace(redirectTo);
+
+      toast.success(data.message || "Login successful!");
+
+      const redirect = searchParams.get("redirect") || "/dashboard";
+      router.push(redirect);
+
+    } catch (error) {
+      toast.error("An error occurred during login");
+      console.error("Login error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -62,10 +71,11 @@ const LoginForm=() => {
             Login to Ward Notice Board
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="identifier">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -74,6 +84,7 @@ const LoginForm=() => {
                 type="text"
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -84,11 +95,17 @@ const LoginForm=() => {
                 required
               />
             </div>
-            <Button className="w-full h-12 rounded-xl bg-[#0f2b66]" type="submit" disabled={isSubmitting}>
-              <LogIn className="mr-2 h-4 w-4" />{" "}
+
+            <Button
+              className="w-full h-12 rounded-xl bg-[#0f2b66]"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              <LogIn className="mr-2 h-4 w-4" />
               {isSubmitting ? "Logging in..." : "Login"}
             </Button>
           </form>
+
           <p className="mt-4 text-center text-sm md:text-md font-semibold text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link className="underline" href="/register">
@@ -99,6 +116,6 @@ const LoginForm=() => {
       </Card>
     </div>
   );
-}
+};
 
 export default LoginForm;
