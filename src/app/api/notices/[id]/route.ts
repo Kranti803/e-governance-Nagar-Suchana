@@ -6,10 +6,10 @@ import mongoose from "mongoose";
 // GET /api/notices/[id]
 export const GET = async (
   _req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) => {
   try {
-    const { id } = context.params;
+    const { id } = await context.params; // await the promise
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid notice id" }, { status: 400 });
@@ -32,10 +32,10 @@ export const GET = async (
 // PATCH /api/notices/[id]
 export const PATCH = async (
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) => {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid notice id" }, { status: 400 });
@@ -92,10 +92,10 @@ export const PATCH = async (
 // DELETE /api/notices/[id]
 export const DELETE = async (
   _req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) => {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ message: "Invalid notice id" }, { status: 400 });

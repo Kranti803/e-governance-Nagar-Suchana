@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 type CategoryBadgeProps = {
   label: string;
@@ -23,7 +24,7 @@ const CategoryBadge = ({
     )}
   >
     {icon && (
-      <img src={icon.src} alt={`${label} icon`} className="w-5 h-5" />
+      <Image src={icon.src} alt={`${label} icon`}  width={20} height={20} />
     )}
     {label}
   </Badge>
