@@ -36,12 +36,24 @@ export const PATCH = async (request: Request, { params }: Params) => {
       return NextResponse.json({ message: "Invalid notice id" }, { status: 400 });
     }
 
-    const body = await request.json();
+    const body: {
+      title?: string;
+      category?: string;
+      summary?: string;
+      content?: string;
+      publishDate?: string;
+    } = await request.json();
     const { title, category, summary, content, publishDate } = body;
 
     await connectToDatabase();
 
-    const update: any = {};
+    const update: Partial<{
+      title: string;
+      category: string;
+      summary: string;
+      content: string;
+      publishDate: Date;
+    }> = {};
     if (title !== undefined) update.title = title;
     if (category !== undefined) update.category = category;
     if (summary !== undefined) update.summary = summary;

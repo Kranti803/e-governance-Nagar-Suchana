@@ -8,8 +8,15 @@ export const POST = async (request: NextRequest) => {
   try {
     await connectToDatabase();
 
-    const body = await request.json();
-    const { fullName, email, phone, password, municipality, ward } = body as any;
+    const body: {
+      fullName?: string;
+      email?: string;
+      phone?: string;
+      password?: string;
+      municipality?: string;
+      ward?: string;
+    } = await request.json();
+    const { fullName, email, phone, password, municipality, ward } = body;
 
     
     if (!fullName || !email || !phone || !password || !municipality || !ward) {

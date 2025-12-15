@@ -72,7 +72,12 @@ const Settings: React.FC = () => {
 
     try {
       setSaving(true);
-      const payload: any = {
+      const payload: {
+        fullName: string;
+        phoneNumber: string;
+        newPassword?: string;
+        oldPassword?: string;
+      } = {
         fullName: formData.fullName,
         phoneNumber: formData.phoneNumber,
       };

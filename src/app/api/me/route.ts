@@ -35,6 +35,13 @@ export const GET = async (request: NextRequest) => {
   }
 };
 
+type UpdateBody = {
+  fullName?: string;
+  phoneNumber?: string;
+  oldPassword?: string;
+  newPassword?: string;
+};
+
 export const PATCH = async (request: NextRequest) => {
   try {
     const userId = await getUserFromRequest(request);
@@ -42,8 +49,8 @@ export const PATCH = async (request: NextRequest) => {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { fullName, phoneNumber, oldPassword, newPassword } = body as any;
+    const body: UpdateBody = await request.json();
+    const { fullName, phoneNumber, oldPassword, newPassword } = body;
 
     await connectToDatabase();
     const user = await User.findById(userId);
@@ -73,7 +80,7 @@ export const PATCH = async (request: NextRequest) => {
 
     await user.save();
     const sanitized = user.toObject();
-    delete (sanitized as any).passwordHash;
+    delete (sanitized as { passwordHash?: string }).passwordHash;
 
     return NextResponse.json({
       message: "Profile updated",
