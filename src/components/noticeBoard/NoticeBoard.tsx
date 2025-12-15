@@ -12,10 +12,7 @@ const NoticeBoard = () => {
 
   return (
     <div className="w-full space-y-6 ">
-      <div className="bg-[#0f2b66] text-white p-4 rounded-xl text-lg font-semibold">
-        Ward 12 डिजिटल सूचना पट्टी
-      </div>
-
+    
       <div className="relative">
         <Input placeholder="Search notices..." className="rounded-full px-10" />
         <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />

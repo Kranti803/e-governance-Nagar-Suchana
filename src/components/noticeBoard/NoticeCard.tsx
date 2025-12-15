@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { categories } from "@/constants";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 // Helper function
 const getCategoryIcon = (category: string) =>
@@ -31,7 +32,8 @@ const NoticeCard = ({ n }: any) => {
           </div>
 
           <Button className="bg-green-600 text-white rounded-full px-5 py-2 hover:bg-green-700">
-            Read More
+            <Link href={`/dashboard/${1}`}>Read More</Link>
+            {/* <Link href={`/dashboard/${n.id}`}>Read More</Link> */}
           </Button>
         </aside>
       </CardContent>

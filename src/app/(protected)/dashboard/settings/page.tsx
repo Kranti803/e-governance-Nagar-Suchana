@@ -1,12 +1,7 @@
 import Settings from "@/components/mainDashboard/Settings";
-import React from "react";
 
-const page = () => {
-  return (
-    <>
-      <Settings />
-    </>
-  );
+const SettingsPage: React.FC = () => {
+  return <Settings />;
 };
 
-export default page;
+export default SettingsPage;

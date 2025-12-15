@@ -41,21 +41,21 @@ const data = {
       ],
     },
     {
-      url: "#",
+      url: "/dashboard/admin",
       items: [
         {
           title: "Admin: Dashboard",
-          url: "/admin/dashboard",
+          url: "/dashboard/admin/details",
           icon: <Shield size={28} />,
         },
         {
           title: "Admin: Post Notice",
-          url: "/admin/post_notice",
+          url: "/dashboard/admin/post",
           icon: <SquarePlus size={28} />,
         },
         {
           title: "Admin: Manage Notices",
-          url: "/admin/manage_notices",
+          url: "/dashboard/admin/manage_notices",
           icon: <FolderKanban size={28} />,
         },
       ],
