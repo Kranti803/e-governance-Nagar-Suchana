@@ -1,11 +1,11 @@
 import { connectToDatabase } from "@/lib/db";
 import { Notice } from "@/models/Notice";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 
-type Params = { params: { id: string } };
+type RouteContext = { params: { id: string } };
 
-export const GET = async (_req: Request, { params }: Params) => {
+export const GET = async (_req: NextRequest, { params }: RouteContext) => {
   try {
     const { id } = params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -29,7 +29,7 @@ export const GET = async (_req: Request, { params }: Params) => {
   }
 };
 
-export const PATCH = async (request: Request, { params }: Params) => {
+export const PATCH = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const { id } = params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -85,7 +85,7 @@ export const PATCH = async (request: Request, { params }: Params) => {
   }
 };
 
-export const DELETE = async (_req: Request, { params }: Params) => {
+export const DELETE = async (_req: NextRequest, { params }: RouteContext) => {
   try {
     const { id } = params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
