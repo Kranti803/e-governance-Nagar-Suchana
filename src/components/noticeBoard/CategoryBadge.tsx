@@ -1,17 +1,19 @@
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 
+type CategoryBadgeProps = {
+  label: string;
+  icon?: { src: string };
+  selected: boolean;
+  onClick: () => void;
+};
+
 const CategoryBadge = ({
   label,
   icon,
   selected,
   onClick,
-}: {
-  label: string;
-  icon?: any;
-  selected: boolean;
-  onClick: () => void;
-}) => (
+}: CategoryBadgeProps) => (
   <Badge
     onClick={onClick}
     variant="secondary"
@@ -20,7 +22,9 @@ const CategoryBadge = ({
       { "bg-green-700 text-white": selected }
     )}
   >
-    {icon && <img src={icon.src} className="w-5 h-5" />}
+    {icon && (
+      <img src={icon.src} alt={`${label} icon`} className="w-5 h-5" />
+    )}
     {label}
   </Badge>
 );

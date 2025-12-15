@@ -1,6 +1,6 @@
 import { connectToDatabase } from "@/lib/db";
 import { User } from "@/models/User";
-import bcrypt from "bcryptjs";
+import bcrypt  from "bcryptjs";
 import { setAuthCookie, signAuthToken } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 
