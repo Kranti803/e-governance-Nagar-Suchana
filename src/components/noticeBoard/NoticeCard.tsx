@@ -5,11 +5,29 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 
 // Helper function
-const getCategoryIcon = (category: string) =>
-  categories.find((c) => c.category === category)?.icon?.src || "📌";
+const getCategoryIcon = (category: string) => {
+  const match = categories.find(
+    (c) => c.category.toLowerCase() === category?.toLowerCase()
+  );
+  return match?.icon?.src || "📌";
+};
 
-const NoticeCard = ({ n }: any) => {
+type NoticeCardProps = {
+  n: {
+    _id: string;
+    title: string;
+    summary?: string;
+    content?: string;
+    category: string;
+    publishDate?: string;
+  };
+};
+
+const NoticeCard = ({ n }: NoticeCardProps) => {
   const icon = getCategoryIcon(n.category);
+  const date = n.publishDate
+    ? new Date(n.publishDate).toLocaleDateString()
+    : "";
 
   return (
     <Card className="rounded-2xl shadow-sm">
@@ -21,10 +39,12 @@ const NoticeCard = ({ n }: any) => {
         <aside className="flex flex-col gap-y-4 sm:flex-row justify-between w-full">
           <div className="space-y-2 w-3/4">
             <h2 className="text-lg font-semibold">{n.title}</h2>
-            <p className="text-sm text-gray-600 font-semibold">{n.desc}</p>
+            <p className="text-sm text-gray-600 font-semibold">
+              {n.summary || n.content?.slice(0, 120)}
+            </p>
 
             <div className="flex gap-3 items-center text-sm mt-1">
-              <span className="text-gray-500 font-semibold">{n.date}</span>
+              <span className="text-gray-500 font-semibold">{date}</span>
               <Badge className="rounded-full px-3 py-1 text-xs bg-green-700">
                 {n.category}
               </Badge>
@@ -32,8 +52,7 @@ const NoticeCard = ({ n }: any) => {
           </div>
 
           <Button className="bg-green-600 text-white rounded-full px-5 py-2 hover:bg-green-700">
-            <Link href={`/dashboard/${1}`}>Read More</Link>
-            {/* <Link href={`/dashboard/${n.id}`}>Read More</Link> */}
+            <Link href={`/dashboard/${n._id}`}>Read More</Link>
           </Button>
         </aside>
       </CardContent>

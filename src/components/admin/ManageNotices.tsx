@@ -35,32 +35,49 @@ type Notice = {
   publishDate: string;
 };
 
-/* ---------------- DUMMY DATA ---------------- */
-
-const dummyNotices: Notice[] = [
-  {
-    _id: "dummy-1",
-    title: "Road Maintenance Notice",
-    summary: "Main road will be closed from 10 AM to 5 PM.",
-    content:
-      "The municipality informs all citizens that the main road will remain closed due to maintenance work. Please use alternative routes.",
-    category: "GENERAL",
-    publishDate: new Date().toISOString(),
-  },
-];
-
 /* ---------------- COMPONENT ---------------- */
 
 export default function ManageNoticeAdmin() {
-  const [notices, setNotices] = useState<Notice[]>(dummyNotices);
+  const [notices, setNotices] = useState<Notice[]>([]);
   const [selected, setSelected] = useState<Notice | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  /* ---------- LOAD ---------- */
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/notices");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.message || "Failed to load notices");
+        setNotices(data?.notices || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load notices");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   /* ---------- DELETE ---------- */
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this notice?")) return;
-    setNotices((prev) => prev.filter((n) => n._id !== id));
+    try {
+      setSubmitting(true);
+      const res = await fetch(`/api/notices/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.message || "Failed to delete notice");
+      setNotices((prev) => prev.filter((n) => n._id !== id));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete notice");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   /* ---------- UPDATE ---------- */
@@ -68,7 +85,7 @@ export default function ManageNoticeAdmin() {
     e.preventDefault();
     if (!selected) return;
 
-    setLoading(true);
+    setSubmitting(true);
     const formData = new FormData(e.currentTarget);
 
     const payload = {
@@ -79,14 +96,24 @@ export default function ManageNoticeAdmin() {
       publishDate: String(formData.get("publishDate")),
     };
 
-    setNotices((prev) =>
-      prev.map((n) =>
-        n._id === selected._id ? { ...n, ...payload } : n
-      )
-    );
+    try {
+      const res = await fetch(`/api/notices/${selected._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.message || "Failed to update notice");
 
-    setLoading(false);
-    setOpen(false);
+      setNotices((prev) =>
+        prev.map((n) => (n._id === selected._id ? { ...n, ...payload } : n))
+      );
+      setOpen(false);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to update notice");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -96,6 +123,15 @@ export default function ManageNoticeAdmin() {
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {loading && <p className="text-sm text-muted-foreground">Loading notices...</p>}
+        {error && (
+          <p className="text-sm text-red-600" aria-live="polite">
+            {error}
+          </p>
+        )}
+        {!loading && !error && notices.length === 0 && (
+          <p className="text-sm text-muted-foreground">No notices found.</p>
+        )}
         {notices.map((notice) => (
           <div
             key={notice._id}
@@ -127,6 +163,7 @@ export default function ManageNoticeAdmin() {
                 size="icon"
                 variant="destructive"
                 onClick={() => handleDelete(notice._id)}
+                disabled={submitting}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -207,8 +244,8 @@ export default function ManageNoticeAdmin() {
               </div>
 
               <div className="flex justify-end gap-3 pt-2">
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Updating..." : "Update Notice"}
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? "Updating..." : "Update Notice"}
                 </Button>
               </div>
             </form>

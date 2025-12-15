@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,15 +17,41 @@ interface FormData {
 const Settings: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
-    phoneNumber: "98XXXXXXXX",
+    phoneNumber: "",
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/me");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.message || "Failed to load profile");
+
+        setFormData((prev) => ({
+          ...prev,
+          fullName: data.user?.fullName || "",
+          phoneNumber: data.user?.phone || "",
+        }));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -33,9 +59,48 @@ const Settings: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (): void => {
-    console.log("Form submitted:", formData);
-    // Add your submit logic here
+  const handleSubmit = async () => {
+    setMessage(null);
+    setError(null);
+
+    if (formData.newPassword || formData.confirmPassword || formData.oldPassword) {
+      if (formData.newPassword !== formData.confirmPassword) {
+        setError("New password and confirm password do not match");
+        return;
+      }
+    }
+
+    try {
+      setSaving(true);
+      const payload: any = {
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+      };
+      if (formData.newPassword) {
+        payload.newPassword = formData.newPassword;
+        payload.oldPassword = formData.oldPassword;
+      }
+
+      const res = await fetch("/api/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.message || "Failed to save settings");
+
+      setMessage("Profile updated successfully");
+      setFormData((prev) => ({
+        ...prev,
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save settings");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -47,88 +112,106 @@ const Settings: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">User Settings</p>
         </div>
 
-        {/* Form Fields */}
-        <div className="space-y-6">
-          {/* Full Name and Phone Number Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                name="fullName"
-                type="text"
-                placeholder="Enter your full name"
-                value={formData.fullName}
-                onChange={handleChange}
-              />
+        {loading && <p className="text-sm text-muted-foreground">Loading profile...</p>}
+        {error && (
+          <p className="text-sm text-red-600" aria-live="polite">
+            {error}
+          </p>
+        )}
+
+        {!loading && (
+          <div className="space-y-6">
+            {/* Full Name and Phone Number Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="text"
+                  placeholder="98XXXXXXXX"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone Number</Label>
-              <Input
-                id="phoneNumber"
-                name="phoneNumber"
-                type="text"
-                placeholder="98XXXXXXXX"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-              />
+            {/* Old Password and New Password Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="oldPassword">Old Password</Label>
+                <Input
+                  id="oldPassword"
+                  name="oldPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.oldPassword}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  name="newPassword"
+                  type="password"
+                  placeholder="Create a new password"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
+
+            {/* Confirm Password */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Re-enter new password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-end pt-4">
+              <Button
+                onClick={handleSubmit}
+                className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+                disabled={saving}
+              >
+                <Save size={16} />
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+
+            {(message || error) && (
+              <p
+                className={`text-sm ${error ? "text-red-600" : "text-green-600"}`}
+                aria-live="polite"
+              >
+                {error || message}
+              </p>
+            )}
           </div>
-
-          {/* Old Password and New Password Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="oldPassword">Old Password</Label>
-              <Input
-                id="oldPassword"
-                name="oldPassword"
-                type="password"
-                placeholder="••••••••"
-                value={formData.oldPassword}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                name="newPassword"
-                type="password"
-                placeholder="Create a new password"
-                value={formData.newPassword}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {/* Confirm Password */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Re-enter new password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end pt-4">
-            <Button
-              onClick={handleSubmit}
-              className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-            >
-              <Save size={16} />
-              Save Changes
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

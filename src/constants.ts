@@ -80,36 +80,3 @@ export const categories:Category[] = [
   { category: "General", icon: NoticePNG },
 ];
 
-// sample notices
-type Notice = {
-  title: string;
-  desc: string;
-  date: string;
-  category: string;
-};  
-export const notices: Notice[] = [
-  {
-    title: "Road Maintenance Schedule",
-    desc: "Ward office will conduct road maintenance on Main Street from 10th–12th. Please park vehicles accordingly. Alternative routes will be signposted.",
-    date: "Sep 12, 2025",
-    category: "General",
-  },
-  {
-    title: "Property Tax Deadline Reminder",
-    desc: "Citizens are requested to clear pending property taxes by the end of this month to avoid penalties. Online and in-person payment options available.",
-    date: "Sep 08, 2025",
-    category: "Tax",
-  },
-  {
-    title: "Free Health Camp",
-    desc: "A free health camp will be organized at the ward office premises on Sunday from 9 AM to 3 PM. Services include general checkups and vaccinations.",
-    date: "Sep 05, 2025",
-    category: "Health",
-  },
-  {
-    title: "Community Festival",
-    desc: "Join us for the annual community festival featuring local food, music, and cultural performances at Central Park this Saturday evening.",
-    date: "Aug 28, 2025",
-    category: "Events",
-  },
-];
