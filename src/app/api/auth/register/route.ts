@@ -36,7 +36,7 @@ export const POST = async (request: NextRequest) => {
     });
 
     // Generate auth token and set cookie
-    const token = signAuthToken(String(created._id));
+    const token =  await signAuthToken(String(created._id));
     const res = NextResponse.json({ message: "Registered successfully" }, { status: 201 });
     setAuthCookie(res, token);
 

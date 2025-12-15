@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { categories } from "@/constants";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 // Helper function
 const getCategoryIcon = (category: string) => {
@@ -33,7 +34,7 @@ const NoticeCard = ({ n }: NoticeCardProps) => {
     <Card className="rounded-2xl shadow-sm">
       <CardContent className="p-5 flex items-start gap-4">
         <span className="text-green-600 border border-green-600 p-3 rounded-lg">
-          <img src={icon} className="w-4 h-4" />
+          <Image src={icon} alt={`${n.category} icon`} className="w-4 h-4" width={16} height={16} />
         </span>
 
         <aside className="flex flex-col gap-y-4 sm:flex-row justify-between w-full">

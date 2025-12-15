@@ -6,10 +6,14 @@ if (!MONGODB_URI) {
   console.warn("MONGODB_URI is not set. Set it in your environment to enable DB.")
 }
 
-let cached = (global as any).mongoose as { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined
+type MongooseCache = { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
+
+const globalWithMongoose = global as typeof global & { mongoose?: MongooseCache };
+
+let cached = globalWithMongoose.mongoose as MongooseCache | undefined;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null }
+  cached = globalWithMongoose.mongoose = { conn: null, promise: null }
 }
 
 export const connectToDatabase = async () => {

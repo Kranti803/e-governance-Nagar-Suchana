@@ -12,7 +12,16 @@ const NoticeBoard = () => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notices, setNotices] = useState<any[]>([]);
+  type Notice = {
+    _id: string;
+    title: string;
+    summary?: string;
+    content?: string;
+    category: string;
+    publishDate?: string;
+  };
+
+  const [notices, setNotices] = useState<Notice[]>([]);
 
   useEffect(() => {
     const load = async () => {
